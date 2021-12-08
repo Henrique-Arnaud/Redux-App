@@ -7,25 +7,38 @@ import { Container, HistoryBody, HistoryContainer, HistoryHeader, Perfil } from 
 import { FiTrash2 } from 'react-icons/fi';
 
 export const Home: React.FC = () => {
+  
+  // chamo o hook da função dispatch
   const dispatch = useDispatch();
+  
+  // Pego o estado inicial de dentro do redux. Toda vez que eu atualizar o estado users de dentro do redux, o useSelector pega o valor novamente e manda pra const historyUsers
   const historyUsers = useSelector<IState, IHistoryUsers[]>(state => state.history.users);
+  
+  // estado do usuário atual
   const [currentUser, setCurrentUser] = useState<IUser>();
 
+  /* O hook useEffect é uma função que é executada sempre que o estado passado no colchete atualizar. Por exemplo, eu não passei nada: então executa quando entrar na página; eu passei o estado historyUsers: a função é executada sempre que esse estado for atualizado. 
+  * Dá para fazer muitas coisas com ele, por exemplo bloquear um botão caso algum campo não esteja do jeito que você quer, caso esteja usando estado nos inputs. Você pode literalmente passar 20 estados, e a função vai executar a CADA vez que QUALQUER estado for modificado.
+  */
   useEffect(() => {
     historyUsers.length !== 0 && setCurrentUser(historyUsers[historyUsers.length - 1].user);
   }, [historyUsers]);
 
+  // O useCallback é um jeito seguro de evitar renderização desnecessária e atualizar estados por meio de uma função. Sempre "observe" o estado que será atualizado dentro de [], para renderizar em "tempo real". 
   const handleSetCurrentUser = useCallback((user: IUser) => {
     setCurrentUser(user);
   }, [currentUser])
 
+  // Aqui eu to observando a função dispatch dentro dos colchetes para a atualização do estado dentro do redux.
   const handleRemoveUser = useCallback((user: IUser) => {
+    // dispatch para remoção do usuário da tabela.
     dispatch(removeUserOfHistory(user));
   }, [dispatch])
 
   return (
     <Container>
       <Perfil>
+        {/* Ternário para verificar se já tem algum usuário no estado que vem do redux. Se não tiver, monta um perfil modelo com informações estáticas*/}
         {historyUsers.length !== 0 ? (
           <>
             <img src={currentUser?.avatar_url} alt="" />
@@ -69,9 +82,13 @@ export const Home: React.FC = () => {
           <span></span>
         </HistoryHeader>
         <HistoryBody>
+          {/* Verifico se há algum elemento no array antes de renderizar o componente dinámico com o map*/}
           {historyUsers.length !== 0 && (
+            // (map padrão, pegando o index do looping com "i" para jogar no looping depois)
             historyUsers.map((history, i) => (
+              // "key" é uma propriedade que ajuda o react a identificar os itens, como quais sofreram atualização, foram adicionados ou foram removidos. Pode ser usado o próprio id do elemento, mas como já tive problemas com o uso do id ao tentar usar Ref(não precisa ter pressa nesse daqui, geralmente se aprende por necessidade mesmo), uso "i" mesmo.
               <div key={i}>
+                {/* onClick pode ser usado na maioria das tags clássicas do html. A função que eu to chamando aqui é um hook do react, o useCallback que eu explico lá no começo */}
                 <div className="image" onClick={() => handleSetCurrentUser(history.user)}>
                   <img src={history.user.avatar_url} alt="" />
                 </div>
