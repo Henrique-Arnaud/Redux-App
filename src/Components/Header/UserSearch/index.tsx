@@ -12,7 +12,7 @@ interface FormProps{
 }
 
 export const UserSearch = () => {
-
+  // dispatch é uma função
   const dispatch = useDispatch();
   const {handleSubmit, register, formState: {errors}} = useForm<FormProps>({
     defaultValues: {
@@ -35,7 +35,10 @@ export const UserSearch = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Input type="text" placeholder="Search GitHub Users" {...register("username", {
           required: true,
-          pattern: /^[A-Za-z\u00C0-\u017F\.\-]+$/i,
+          pattern: {
+           value: /^[A-Za-z\u00C0-\u017F\.\-]+$/i,
+           message: ""
+          }
         })}/>
         <Button type="submit">
           Search

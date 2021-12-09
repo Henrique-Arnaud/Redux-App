@@ -7,24 +7,24 @@ import { Container, HistoryBody, HistoryContainer, HistoryHeader, Perfil } from 
 import { FiTrash2 } from 'react-icons/fi';
 
 export const Home: React.FC = () => {
-  
-  // chamo o hook da função dispatch
+
+  // chamo o hook useDispatch. "dispatch" É uma função que recebe como parâmetro a uma função da pasta actions do redux
   const dispatch = useDispatch();
-  
+
   // Pego o estado inicial de dentro do redux. Toda vez que eu atualizar o estado users de dentro do redux, o useSelector pega o valor novamente e manda pra const historyUsers
   const historyUsers = useSelector<IState, IHistoryUsers[]>(state => state.history.users);
-  
+
   // estado do usuário atual
   const [currentUser, setCurrentUser] = useState<IUser>();
 
   /* O hook useEffect é uma função que é executada sempre que o estado passado no colchete atualizar. Por exemplo, eu não passei nada: então executa quando entrar na página; eu passei o estado historyUsers: a função é executada sempre que esse estado for atualizado. 
-  * Dá para fazer muitas coisas com ele, por exemplo bloquear um botão caso algum campo não esteja do jeito que você quer, caso esteja usando estado nos inputs. Você pode literalmente passar 20 estados, e a função vai executar a CADA vez que QUALQUER estado for modificado.
+  * Dá para fazer muitas coisas com ele, por exemplo bloquear um botão caso algum campo não esteja do jeito que você quer, caso esteja usando estado nos inputs. Você pode literalmente passar 20 estados, e a função vai executar a CADA vez que QUALQUER estado observado dentro dos colchetes for modificado.
   */
   useEffect(() => {
     historyUsers.length !== 0 && setCurrentUser(historyUsers[historyUsers.length - 1].user);
   }, [historyUsers]);
 
-  // O useCallback é um jeito seguro de evitar renderização desnecessária e atualizar estados por meio de uma função. Sempre "observe" o estado que será atualizado dentro de [], para renderizar em "tempo real". 
+  // O useCallback é um jeito seguro de evitar renderização desnecessária e atualizar estados por meio de uma função. Sempre "observe" o estado que será atualizado dentro de [], para renderizar em "tempo real".
   const handleSetCurrentUser = useCallback((user: IUser) => {
     setCurrentUser(user);
   }, [currentUser])
@@ -93,7 +93,7 @@ export const Home: React.FC = () => {
                   <img src={history.user.avatar_url} alt="" />
                 </div>
                 <div className="name" onClick={() => handleSetCurrentUser(history.user)}>
-                  <p className="name">{history.user.name}</p>
+                  <p className="name">{history.user.id}</p>
                 </div>
                 <div>
                   <p>{history.user.login}</p>
